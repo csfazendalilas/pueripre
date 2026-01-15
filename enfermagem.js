@@ -315,11 +315,47 @@ function construirResumoAgendamento(slot, nome, dataNascimento, observacoes) {
 // ============================================
 // CONSTRUÇÃO DA URL DO WHATSAPP
 // ============================================
-function construirUrlWhatsApp(slot, nome) {
+function construirUrlWhatsApp(slot, nome, dataNascimento, observacoes) {
   const diaSemana = slot.diaSemana ? slot.diaSemana.replace('-feira', '') : '';
   const dataFormatada = diaSemana ? `${diaSemana}, ${slot.data}` : slot.data;
-
-  const texto = `Olá! Aqui é ${nome}. Acabei de solicitar um agendamento para ${dataFormatada} às ${slot.hora}. Poderia confirmar, por favor?`;
+  
+  // Recupera dados da triagem
+  const dadosTriagemStr = localStorage.getItem('dadosTriagem');
+  const triagem = dadosTriagemStr ? JSON.parse(dadosTriagemStr) : {};
+  
+  // Monta a mensagem completa
+  let texto = `🏥 *SOLICITAÇÃO DE AGENDAMENTO*\n\n`;
+  texto += `📅 *Data:* ${dataFormatada}\n`;
+  texto += `🕐 *Horário:* ${slot.hora}\n`;
+  texto += `👨‍⚕️ *Profissional:* Enfermagem\n\n`;
+  
+  texto += `👤 *DADOS DO PACIENTE*\n`;
+  texto += `• Nome: ${nome}\n`;
+  texto += `• Nascimento: ${dataNascimento}\n`;
+  texto += `• Motivo: ${observacoes}\n\n`;
+  
+  // Adiciona informações da triagem
+  if (triagem.tipo === 'pre-natal') {
+    texto += `🤰 *PRÉ-NATAL*\n`;
+    if (triagem.ultimaConsulta === 'primeira') {
+      texto += `• Primeira consulta de pré-natal\n`;
+    } else {
+      texto += `• Última consulta: ${triagem.dataUltimaConsulta || 'não informada'}\n`;
+    }
+    if (triagem.semanasGestacao === 'semanas') {
+      texto += `• Idade gestacional: ${triagem.numeroSemanas} semanas\n`;
+    } else {
+      texto += `• Idade gestacional: não lembra\n`;
+    }
+    texto += `• Última consulta foi com: ${triagem.ultimoProfissional === 'medico' ? 'Médico(a)' : 'Enfermeiro(a)'}\n`;
+  } else if (triagem.tipo === 'puericultura') {
+    texto += `👶 *PUERICULTURA*\n`;
+    texto += `• Idade da criança: ${triagem.mesesCrianca} meses\n`;
+    texto += `• Última consulta com: ${triagem.ultimaConsultaMeses} meses\n`;
+    texto += `• Última consulta foi com: ${triagem.ultimoProfissional === 'medico' ? 'Médico(a)' : 'Enfermeiro(a)'}\n`;
+  }
+  
+  texto += `\n_Aguardo confirmação, por favor!_ 🙏`;
 
   return `https://wa.me/${WHATSAPP_DESTINO}?text=${encodeURIComponent(texto)}`;
 }
@@ -404,7 +440,7 @@ async function enviarAgendamento(event) {
     msgDiv.className = 'msg sucesso';
     msgDiv.innerHTML = construirResumoAgendamento(slot, nome, dataNascimento, observacoes);
 
-    waLink.href = construirUrlWhatsApp(slot, nome);
+    waLink.href = construirUrlWhatsApp(slot, nome, dataNascimento, observacoes);
     waDiv.style.display = 'block';
 
     if (formFields) {
