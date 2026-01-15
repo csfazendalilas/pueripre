@@ -1,0 +1,19 @@
+# Backend do Google Apps Script (não vai pro GitHub Pages)
+# Esses arquivos ficam no Google Apps Script, não no frontend
+codeenfermagem.js
+codemedico.js
+CodeEnfermagem.gs
+CodeMedico.gs
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log

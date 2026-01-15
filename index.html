@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Agendamento | Pré-natal e Puericultura</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Agende sua consulta de pré-natal ou puericultura no Centro de Saúde Alto Ribeirão - SUS Florianópolis">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-index.css">
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <!-- Background decorativo -->
+    <div class="bg-pattern" aria-hidden="true"></div>
+
+    <!-- Header com branding -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">Pré-natal e Puericultura</span>
+          <span class="logo-subtitle">Centro de Saúde Alto Ribeirão</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Container principal -->
+    <main class="main-container">
+      
+      <!-- CARD 1: Seleção do tipo de atendimento -->
+      <div id="card-selecao" class="card">
+        <div class="card-header">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Bem-vindo(a)
+          </div>
+          <h1>Qual tipo de atendimento você precisa?</h1>
+          <p class="description">
+            Selecione uma das opções abaixo para continuar com o agendamento.
+          </p>
+        </div>
+
+        <div class="selection-grid">
+          <!-- Opção Pré-natal -->
+          <button type="button" class="selection-card" data-tipo="prenatal">
+            <div class="selection-icon">🤰</div>
+            <div class="selection-content">
+              <h3>Pré-natal</h3>
+              <p>Acompanhamento da gestação</p>
+            </div>
+            <div class="selection-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Opção Puericultura -->
+          <button type="button" class="selection-card" data-tipo="puericultura">
+            <div class="selection-icon">👶</div>
+            <div class="selection-content">
+              <h3>Puericultura</h3>
+              <p>Consultas de rotina para crianças até 2 anos</p>
+            </div>
+            <div class="selection-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </button>
+        </div>
+
+        <!-- Alertas informativos -->
+        <div class="intro-alerts">
+          <div class="alert alert-default">
+            <strong>📍 Ou procure o Centro de Saúde Alto Ribeirão</strong>
+            às 07h, quando são entregues as fichas para atendimento do dia.
+          </div>
+
+          <div class="alert alert-danger">
+            <strong>🚨 Urgências e Emergências</strong>
+            Ligue SAMU 192 ou procure a UPA Sul, HU ou Hospital Celso Ramos.
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Formulário Pré-natal -->
+      <div id="card-prenatal" class="card hidden">
+        <div class="card-header">
+          <div class="badge badge-pink">
+            <span class="badge-dot"></span>
+            Pré-natal
+          </div>
+          <h1>Informações da gestação</h1>
+          <p class="description">
+            Responda as perguntas abaixo para direcionarmos você corretamente.
+          </p>
+        </div>
+
+        <form id="form-prenatal" class="form-fields">
+          <!-- Pergunta A: Última consulta -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">📅</span>
+              Quando foi a data da sua última consulta?
+            </label>
+            <div class="option-cards">
+              <label class="option-card">
+                <input type="radio" name="ultimaConsulta" value="data" required>
+                <span class="option-content">
+                  <span class="option-title">Informar data</span>
+                  <span class="option-desc">Pode ser aproximadamente</span>
+                </span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="ultimaConsulta" value="primeira">
+                <span class="option-content">
+                  <span class="option-title">Primeira consulta</span>
+                  <span class="option-desc">Nunca fiz pré-natal</span>
+                </span>
+              </label>
+            </div>
+            <div id="campo-data-consulta" class="conditional-field" style="display: none;">
+              <input type="date" id="dataUltimaConsulta" class="input-field">
+            </div>
+          </div>
+
+          <!-- Pergunta B: Semanas gestacionais -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">📊</span>
+              Quantas semanas de idade gestacional?
+            </label>
+            <div class="option-cards">
+              <label class="option-card">
+                <input type="radio" name="semanasGestacao" value="semanas" required>
+                <span class="option-content">
+                  <span class="option-title">Sei quantas semanas</span>
+                  <span class="option-desc">Informar abaixo</span>
+                </span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="semanasGestacao" value="nao_lembro">
+                <span class="option-content">
+                  <span class="option-title">Não lembro</span>
+                  <span class="option-desc">Descobrirei na consulta</span>
+                </span>
+              </label>
+            </div>
+            <div id="campo-semanas" class="conditional-field" style="display: none;">
+              <div class="input-with-suffix">
+                <input type="number" id="numeroSemanas" class="input-field" min="1" max="42" placeholder="Ex: 20">
+                <span class="input-suffix">semanas</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pergunta C: Último profissional -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">👨‍⚕️</span>
+              Com quem foi sua última consulta?
+            </label>
+            <div class="option-cards option-cards-row">
+              <label class="option-card">
+                <input type="radio" name="ultimoProfissional" value="medico" required>
+                <span class="option-content">
+                  <span class="option-icon">🩺</span>
+                  <span class="option-title">Médico(a)</span>
+                </span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="ultimoProfissional" value="enfermeiro">
+                <span class="option-content">
+                  <span class="option-icon">💉</span>
+                  <span class="option-title">Enfermeiro(a)</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <span class="btn-text">Continuar</span>
+              <span class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="voltar">
+              <span class="btn-text">Voltar</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CARD 3: Formulário Puericultura -->
+      <div id="card-puericultura" class="card hidden">
+        <div class="card-header">
+          <div class="badge badge-blue">
+            <span class="badge-dot"></span>
+            Puericultura
+          </div>
+          <h1>Consulta de rotina infantil</h1>
+          <p class="description">
+            Acompanhamento do crescimento e desenvolvimento da criança.
+          </p>
+        </div>
+
+        <!-- Alerta do calendário -->
+        <div class="alert-box">
+          <div class="alert-box-header">
+            <span class="alert-box-icon">📋</span>
+            <strong>Calendário recomendado pelo Ministério da Saúde</strong>
+          </div>
+          <div class="alert-box-content">
+            <p>As consultas de puericultura seguem este calendário:</p>
+            <div class="calendar-grid">
+              <span class="calendar-item">Ao nascer</span>
+              <span class="calendar-item">1 mês</span>
+              <span class="calendar-item">2 meses</span>
+              <span class="calendar-item">4 meses</span>
+              <span class="calendar-item">6 meses</span>
+              <span class="calendar-item">9 meses</span>
+              <span class="calendar-item">12 meses</span>
+              <span class="calendar-item">1 ano e 6 meses</span>
+              <span class="calendar-item">2 anos</span>
+            </div>
+            <p class="alert-box-note">
+              <strong>Atenção:</strong> Para outras consultas não previstas no calendário, 
+              procure o Centro de Saúde presencialmente.
+            </p>
+          </div>
+        </div>
+
+        <form id="form-puericultura" class="form-fields">
+          <!-- Idade da criança -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="mesesCrianca">
+                <span class="label-icon">👶</span>
+                Quantos meses a criança tem?
+              </label>
+              <div class="input-with-suffix">
+                <input type="number" id="mesesCrianca" class="input-field" min="0" max="24" placeholder="Ex: 6" required>
+                <span class="input-suffix">meses</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ultimaConsultaMeses">
+                <span class="label-icon">📅</span>
+                Última consulta foi com quantos meses?
+              </label>
+              <div class="input-with-suffix">
+                <input type="number" id="ultimaConsultaMeses" class="input-field" min="0" max="24" placeholder="Ex: 4" required>
+                <span class="input-suffix">meses</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Último profissional -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">👨‍⚕️</span>
+              Com quem foi a última consulta?
+            </label>
+            <div class="option-cards option-cards-row">
+              <label class="option-card">
+                <input type="radio" name="ultimoProfissionalPuericultura" value="medico" required>
+                <span class="option-content">
+                  <span class="option-icon">🩺</span>
+                  <span class="option-title">Médico(a)</span>
+                </span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="ultimoProfissionalPuericultura" value="enfermeiro">
+                <span class="option-content">
+                  <span class="option-icon">💉</span>
+                  <span class="option-title">Enfermeiro(a)</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <span class="btn-text">Continuar</span>
+              <span class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="voltar">
+              <span class="btn-text">Voltar</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Info cards -->
+      <div class="info-section info-section-single">
+        <div class="info-card info-card-full">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <strong>Centro de Saúde Alto Ribeirão</strong>
+            <address>R. Ingá Mirim, S/N° - Ribeirão da Ilha<br>Florianópolis - SC, 88064-082</address>
+          </div>
+          <a href="https://maps.google.com/?q=Centro+de+Saude+Alto+Ribeirao+Florianopolis" target="_blank"
+            rel="noopener noreferrer" class="info-card-action" aria-label="Ver localização no Google Maps">
+            Ver no mapa →
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Serviço gratuito do SUS • Prefeitura de Florianópolis</p>
+    </footer>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+
+</html>
