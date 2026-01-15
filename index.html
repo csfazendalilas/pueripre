@@ -114,22 +114,24 @@
             </label>
             <div class="option-cards">
               <label class="option-card">
-                <input type="radio" name="ultimaConsulta" value="data" required>
-                <span class="option-content">
-                  <span class="option-title">Informar data</span>
-                  <span class="option-desc">Pode ser aproximadamente</span>
-                </span>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="ultimaConsulta" value="primeira">
+                <input type="radio" name="ultimaConsulta" value="primeira" required>
                 <span class="option-content">
                   <span class="option-title">Primeira consulta</span>
                   <span class="option-desc">Nunca fiz pré-natal</span>
                 </span>
               </label>
-            </div>
-            <div id="campo-data-consulta" class="conditional-field" style="display: none;">
-              <input type="date" id="dataUltimaConsulta" class="input-field">
+              <div class="option-with-field">
+                <label class="option-card">
+                  <input type="radio" name="ultimaConsulta" value="data">
+                  <span class="option-content">
+                    <span class="option-title">Informar data</span>
+                    <span class="option-desc">Pode ser aproximadamente</span>
+                  </span>
+                </label>
+                <div id="campo-data-consulta" class="conditional-field-inline" style="display: none;">
+                  <input type="text" id="dataUltimaConsulta" class="input-field" placeholder="Ex: 15/12/2025">
+                </div>
+              </div>
             </div>
           </div>
 
@@ -141,24 +143,26 @@
             </label>
             <div class="option-cards">
               <label class="option-card">
-                <input type="radio" name="semanasGestacao" value="semanas" required>
-                <span class="option-content">
-                  <span class="option-title">Sei quantas semanas</span>
-                  <span class="option-desc">Informar abaixo</span>
-                </span>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="semanasGestacao" value="nao_lembro">
+                <input type="radio" name="semanasGestacao" value="nao_lembro" required>
                 <span class="option-content">
                   <span class="option-title">Não lembro</span>
                   <span class="option-desc">Descobrirei na consulta</span>
                 </span>
               </label>
-            </div>
-            <div id="campo-semanas" class="conditional-field" style="display: none;">
-              <div class="input-with-suffix">
-                <input type="number" id="numeroSemanas" class="input-field" min="1" max="42" placeholder="Ex: 20">
-                <span class="input-suffix">semanas</span>
+              <div class="option-with-field">
+                <label class="option-card">
+                  <input type="radio" name="semanasGestacao" value="semanas">
+                  <span class="option-content">
+                    <span class="option-title">Sei quantas semanas</span>
+                    <span class="option-desc">Informar abaixo</span>
+                  </span>
+                </label>
+                <div id="campo-semanas" class="conditional-field-inline" style="display: none;">
+                  <div class="input-with-suffix">
+                    <input type="number" id="numeroSemanas" class="input-field" min="1" max="42" placeholder="Ex: 20">
+                    <span class="input-suffix">semanas</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

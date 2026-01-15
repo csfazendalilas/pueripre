@@ -2034,3 +2034,31 @@ select.error:focus {
     padding: var(--spacing-md);
   }
 }
+/* Campo condicional inline (dentro do option-cards) */
+.option-with-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.option-with-field .option-card {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.option-with-field .option-card:has(+ .conditional-field-inline[style*="block"]) {
+  border-bottom: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.conditional-field-inline {
+  padding: var(--spacing-md);
+  background: var(--color-primary-ghost);
+  border: 2px solid var(--color-primary);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  animation: slideDown var(--transition-base);
+}
+
+.conditional-field-inline .input-field {
+  background: var(--color-white);
+}
