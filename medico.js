@@ -336,39 +336,39 @@ function construirUrlWhatsApp(slot, nome, dataNascimento, observacoes) {
   const dadosTriagemStr = localStorage.getItem('dadosTriagem');
   const triagem = dadosTriagemStr ? JSON.parse(dadosTriagemStr) : {};
   
-  // Monta a mensagem completa
-  let texto = `🏥 *SOLICITAÇÃO DE AGENDAMENTO*\n\n`;
-  texto += `📅 *Data:* ${dataFormatada}\n`;
-  texto += `🕐 *Horário:* ${slot.hora}\n`;
-  texto += `👨‍⚕️ *Profissional:* Médico(a)\n\n`;
+  // Monta a mensagem completa (sem emojis para evitar problemas de encoding)
+  let texto = `*SOLICITACAO DE AGENDAMENTO*\n`;
+  texto += `*Consulta Medica*\n\n`;
+  texto += `Data: ${dataFormatada}\n`;
+  texto += `Horario: ${slot.hora}\n\n`;
   
-  texto += `👤 *DADOS DO PACIENTE*\n`;
-  texto += `• Nome: ${nome}\n`;
-  texto += `• Nascimento: ${dataNascimento}\n`;
-  texto += `• Motivo: ${observacoes}\n\n`;
+  texto += `*PACIENTE*\n`;
+  texto += `Nome: ${nome}\n`;
+  texto += `Nascimento: ${dataNascimento}\n`;
+  texto += `Motivo: ${observacoes}\n\n`;
   
   // Adiciona informações da triagem
   if (triagem.tipo === 'pre-natal') {
-    texto += `🤰 *PRÉ-NATAL*\n`;
+    texto += `*PRE-NATAL*\n`;
     if (triagem.ultimaConsulta === 'primeira') {
-      texto += `• Primeira consulta de pré-natal\n`;
+      texto += `- Primeira consulta de pre-natal\n`;
     } else {
-      texto += `• Última consulta: ${triagem.dataUltimaConsulta || 'não informada'}\n`;
+      texto += `- Ultima consulta: ${triagem.dataUltimaConsulta || 'nao informada'}\n`;
     }
     if (triagem.semanasGestacao === 'semanas') {
-      texto += `• Idade gestacional: ${triagem.numeroSemanas} semanas\n`;
+      texto += `- Idade gestacional: ${triagem.numeroSemanas} semanas\n`;
     } else {
-      texto += `• Idade gestacional: não lembra\n`;
+      texto += `- Idade gestacional: nao lembra\n`;
     }
-    texto += `• Última consulta foi com: ${triagem.ultimoProfissional === 'medico' ? 'Médico(a)' : 'Enfermeiro(a)'}\n`;
+    texto += `- Ultima consulta foi com: ${triagem.ultimoProfissional === 'medico' ? 'Medico(a)' : 'Enfermeiro(a)'}\n`;
   } else if (triagem.tipo === 'puericultura') {
-    texto += `👶 *PUERICULTURA*\n`;
-    texto += `• Idade da criança: ${triagem.mesesCrianca} meses\n`;
-    texto += `• Última consulta com: ${triagem.ultimaConsultaMeses} meses\n`;
-    texto += `• Última consulta foi com: ${triagem.ultimoProfissional === 'medico' ? 'Médico(a)' : 'Enfermeiro(a)'}\n`;
+    texto += `*PUERICULTURA*\n`;
+    texto += `- Idade da crianca: ${triagem.mesesCrianca} meses\n`;
+    texto += `- Ultima consulta com: ${triagem.ultimaConsultaMeses} meses\n`;
+    texto += `- Ultima consulta foi com: ${triagem.ultimoProfissional === 'medico' ? 'Medico(a)' : 'Enfermeiro(a)'}\n`;
   }
   
-  texto += `\n_Aguardo confirmação, por favor!_ 🙏`;
+  texto += `\nAguardo confirmacao!`;
 
   return `https://wa.me/${WHATSAPP_DESTINO}?text=${encodeURIComponent(texto)}`;
 }
