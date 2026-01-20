@@ -111,23 +111,158 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // ============================================
+  // FUNÇÕES DE MÁSCARA E VALIDAÇÃO DE DATA
+  // ============================================
+  
+  function aplicarMascaraData(input) {
+    let value = input.value.replace(/\D/g, '');
+    
+    if (value.length > 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2);
+    }
+    if (value.length > 5) {
+      value = value.substring(0, 5) + '/' + value.substring(5, 9);
+    }
+    
+    input.value = value;
+  }
+  
+  function validarData(data) {
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if (!regex.test(data)) {
+      return { valido: false, mensagem: 'Use o formato DD/MM/AAAA' };
+    }
+    
+    const partes = data.split('/');
+    const dia = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10);
+    const ano = parseInt(partes[2], 10);
+    
+    // Validação básica de ranges
+    if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900 || ano > new Date().getFullYear()) {
+      return { valido: false, mensagem: 'Data inválida. Verifique dia, mês e ano.' };
+    }
+    
+    // Validação de dias por mês
+    const diasPorMes = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    
+    // Verifica ano bissexto
+    if (mes === 2 && ((ano % 4 === 0 && ano % 100 !== 0) || (ano % 400 === 0))) {
+      if (dia > 29) {
+        return { valido: false, mensagem: 'Data inválida. Fevereiro tem no máximo 29 dias em anos bissextos.' };
+      }
+    } else {
+      if (dia > diasPorMes[mes - 1]) {
+        return { valido: false, mensagem: `Data inválida. Este mês tem no máximo ${diasPorMes[mes - 1]} dias.` };
+      }
+    }
+    
+    // Validação de data não pode ser futura
+    const dataDigitada = new Date(ano, mes - 1, dia);
+    const hoje = new Date();
+    hoje.setHours(23, 59, 59, 999); // Fim do dia de hoje
+    
+    if (dataDigitada > hoje) {
+      return { valido: false, mensagem: 'A data não pode ser futura.' };
+    }
+    
+    return { valido: true };
+  }
+  
+  function mostrarErroData(campoId, mensagem) {
+    const campo = document.getElementById(campoId);
+    if (!campo) return;
+    
+    campo.setAttribute('aria-invalid', 'true');
+    campo.classList.add('error');
+    
+    // Remove mensagem de erro anterior se existir
+    let errorSpan = document.getElementById(campoId + '-error');
+    if (!errorSpan) {
+      errorSpan = document.createElement('span');
+      errorSpan.id = campoId + '-error';
+      errorSpan.className = 'error-message';
+      errorSpan.setAttribute('role', 'alert');
+      errorSpan.style.marginTop = '4px';
+      errorSpan.style.display = 'block';
+      // Adiciona após o campo, dentro do mesmo container
+      campo.parentNode.appendChild(errorSpan);
+    }
+    errorSpan.textContent = mensagem;
+    errorSpan.style.display = 'block';
+  }
+  
+  function limparErroData(campoId) {
+    const campo = document.getElementById(campoId);
+    if (!campo) return;
+    
+    campo.removeAttribute('aria-invalid');
+    campo.classList.remove('error');
+    
+    const errorSpan = document.getElementById(campoId + '-error');
+    if (errorSpan) {
+      errorSpan.textContent = '';
+      errorSpan.style.display = 'none';
+    }
+  }
+  
+  // ============================================
   // CAMPOS CONDICIONAIS - PRÉ-NATAL
   // ============================================
   
   // Mostrar campo de data quando selecionar "Informar data"
   const radioDataConsulta = document.querySelectorAll('input[name="ultimaConsulta"]');
   const campoDataConsulta = document.getElementById('campo-data-consulta');
+  const inputDataUltimaConsulta = document.getElementById('dataUltimaConsulta');
   
   radioDataConsulta.forEach(radio => {
     radio.addEventListener('change', function() {
       console.log('📅 Última consulta:', this.value);
       if (this.value === 'data' && campoDataConsulta) {
         campoDataConsulta.style.display = 'block';
+        // Foca no campo quando aparece
+        setTimeout(() => {
+          if (inputDataUltimaConsulta) inputDataUltimaConsulta.focus();
+        }, 100);
       } else if (campoDataConsulta) {
         campoDataConsulta.style.display = 'none';
+        // Limpa o campo e erros quando esconde
+        if (inputDataUltimaConsulta) {
+          inputDataUltimaConsulta.value = '';
+          limparErroData('dataUltimaConsulta');
+        }
       }
     });
   });
+  
+  // Aplicar máscara e validação no campo de data da última consulta
+  if (inputDataUltimaConsulta) {
+    // Limitar tamanho máximo
+    inputDataUltimaConsulta.setAttribute('maxlength', '10');
+    inputDataUltimaConsulta.setAttribute('placeholder', 'DD/MM/AAAA');
+    
+    // Aplicar máscara enquanto digita
+    inputDataUltimaConsulta.addEventListener('input', function(e) {
+      aplicarMascaraData(e.target);
+      limparErroData('dataUltimaConsulta');
+    });
+    
+    // Validar quando sair do campo
+    inputDataUltimaConsulta.addEventListener('blur', function() {
+      const valor = this.value.trim();
+      if (!valor) {
+        limparErroData('dataUltimaConsulta');
+        return;
+      }
+      
+      const validacao = validarData(valor);
+      if (!validacao.valido) {
+        mostrarErroData('dataUltimaConsulta', validacao.mensagem);
+      } else {
+        limparErroData('dataUltimaConsulta');
+      }
+    });
+  }
   
   // Mostrar campo de semanas quando selecionar "Sei quantas semanas"
   const radioSemanas = document.querySelectorAll('input[name="semanasGestacao"]');
@@ -163,6 +298,28 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!ultimaConsulta) {
         alert('Por favor, informe quando foi sua última consulta.');
         return;
+      }
+      
+      // Validação da data da última consulta
+      if (ultimaConsulta.value === 'data') {
+        if (!dataUltimaConsulta || !dataUltimaConsulta.value.trim()) {
+          alert('Por favor, informe a data da última consulta.');
+          if (dataUltimaConsulta) {
+            dataUltimaConsulta.focus();
+            mostrarErroData('dataUltimaConsulta', 'Informe a data da última consulta');
+          }
+          return;
+        }
+        
+        const validacaoData = validarData(dataUltimaConsulta.value.trim());
+        if (!validacaoData.valido) {
+          alert(validacaoData.mensagem);
+          if (dataUltimaConsulta) {
+            dataUltimaConsulta.focus();
+            mostrarErroData('dataUltimaConsulta', validacaoData.mensagem);
+          }
+          return;
+        }
       }
       
       if (!semanasGestacao) {
