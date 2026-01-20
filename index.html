@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Agendamento | Pré-natal e Puericultura</title>
+  <title>Agendamento | Pré-natal, Puericultura e Preventivo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Agende sua consulta de pré-natal ou puericultura no Centro de Saúde Alto Ribeirão - SUS Florianópolis">
+  <meta name="description" content="Agende sua consulta de pré-natal, puericultura ou preventivo no Centro de Saúde Alto Ribeirão - SUS Florianópolis">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
           </svg>
         </div>
         <div class="logo-text">
-          <span class="logo-title">Pré-natal e Puericultura</span>
+          <span class="logo-title">Agendamento de Consultas</span>
           <span class="logo-subtitle">Centro de Saúde Fazenda do Rio Tavares</span>
         </div>
       </div>
@@ -69,6 +69,20 @@
             <div class="selection-content">
               <h3>Puericultura</h3>
               <p>Consultas de rotina para crianças até 2 anos</p>
+            </div>
+            <div class="selection-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Opção Preventivo -->
+          <button type="button" class="selection-card" data-tipo="preventivo">
+            <div class="selection-icon">🩺</div>
+            <div class="selection-content">
+              <h3>Preventivo</h3>
+              <p>Papanicolau - rastreio de câncer de colo do útero</p>
             </div>
             <div class="selection-arrow">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -300,6 +314,152 @@
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">
               <span class="btn-text">Continuar</span>
+              <span class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="voltar">
+              <span class="btn-text">Voltar</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CARD 4: Formulário Preventivo -->
+      <div id="card-preventivo" class="card hidden">
+        <div class="card-header">
+          <div class="badge badge-teal">
+            <span class="badge-dot"></span>
+            Preventivo
+          </div>
+          <h1>Exame Preventivo (Papanicolau)</h1>
+          <p class="description">
+            Rastreio de câncer de colo do útero
+          </p>
+        </div>
+
+        <!-- Informações sobre o exame -->
+        <div class="info-box info-box-teal">
+          <div class="info-box-header">
+            <span class="info-box-icon">📖</span>
+            <strong>Como e por que fazer</strong>
+          </div>
+          <div class="info-box-content">
+            <div class="info-item">
+              <span class="info-bullet">▸</span>
+              <div>
+                <strong>Quando iniciar:</strong> a partir dos 25 anos, para mulheres que já tiveram relação sexual.
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-bullet">▸</span>
+              <div>
+                <strong>Periodicidade inicial:</strong> fazer 2 exames com resultado negativo, com intervalo de 1 ano entre eles.
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-bullet">▸</span>
+              <div>
+                <strong>Após dois negativos:</strong> repetir a cada 3 anos, conforme orientação do Ministério da Saúde.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Por que é assim -->
+        <div class="info-box info-box-light">
+          <div class="info-box-header">
+            <span class="info-box-icon">💡</span>
+            <strong>Por que é assim?</strong>
+          </div>
+          <div class="info-box-content">
+            <p>
+              <strong>Antes dos 25 anos:</strong> alterações do HPV são muito frequentes e costumam regredir sozinhas, 
+              sem virar câncer. Fazer exame antes disso não reduz câncer e aumenta tratamentos desnecessários.
+            </p>
+            <p style="margin-top: 12px;">
+              <strong>Após dois exames normais seguidos:</strong> o risco de lesões significativas é baixo, e o intervalo 
+              de 3 anos é seguro, mantendo proteção e evitando exames excessivos.
+            </p>
+          </div>
+        </div>
+
+        <form id="form-preventivo" class="form-fields">
+          <!-- Pergunta: Idade -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">🎂</span>
+              Você tem 25 anos ou mais?
+            </label>
+            <div class="option-cards option-cards-row">
+              <label class="option-card">
+                <input type="radio" name="maiorQue25" value="sim" required>
+                <span class="option-content">
+                  <span class="option-icon">✅</span>
+                  <span class="option-title">Sim</span>
+                </span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="maiorQue25" value="nao">
+                <span class="option-content">
+                  <span class="option-icon">❌</span>
+                  <span class="option-title">Não</span>
+                </span>
+              </label>
+            </div>
+            <!-- Mensagem de bloqueio para menores de 25 -->
+            <div id="aviso-menor-25" class="alert-inline alert-warning" style="display: none;">
+              <span class="alert-inline-icon">⚠️</span>
+              <div>
+                <strong>Rastreio não indicado</strong>
+                <p>Conforme orientação do Ministério da Saúde, o rastreio de câncer de colo do útero é recomendado 
+                a partir dos 25 anos. Converse com um profissional de saúde se tiver dúvidas.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pergunta: Últimos preventivos -->
+          <div id="campo-ultimos-preventivos" class="form-group" style="display: none;">
+            <label class="form-label">
+              <span class="label-icon">📅</span>
+              Quando foram seus últimos preventivos?
+            </label>
+            <p class="field-hint">Informe o ano em que realizou cada exame (aproximadamente)</p>
+            
+            <div class="preventivo-anos">
+              <div class="preventivo-ano-group">
+                <label for="preventivo1">Penúltimo preventivo</label>
+                <input type="number" id="preventivo1" class="input-field" min="2000" max="2026" placeholder="Ex: 2022">
+              </div>
+              <div class="preventivo-ano-group">
+                <label for="preventivo2">Último preventivo</label>
+                <input type="number" id="preventivo2" class="input-field" min="2000" max="2026" placeholder="Ex: 2024">
+              </div>
+            </div>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="naoLembroPreventivos">
+              <span class="checkbox-custom"></span>
+              <span>Não lembro / Nunca fiz</span>
+            </label>
+
+            <!-- Aviso sobre intervalo -->
+            <div id="aviso-intervalo" class="alert-inline alert-info" style="display: none;">
+              <span class="alert-inline-icon">ℹ️</span>
+              <div>
+                <strong>Aviso</strong>
+                <p>Se você já fez 2 preventivos com resultado negativo e o último foi há menos de 3 anos, 
+                não é necessário repetir agora. Você pode continuar o agendamento se desejar, ou aguardar.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btn-preventivo-avancar" class="btn btn-primary" disabled>
+              <span class="btn-text">Avançar para agendamento</span>
               <span class="btn-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="5" y1="12" x2="19" y2="12" />

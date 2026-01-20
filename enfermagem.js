@@ -353,6 +353,19 @@ function construirUrlWhatsApp(slot, nome, dataNascimento, observacoes) {
     texto += `- Idade da crianca: ${triagem.mesesCrianca} meses\n`;
     texto += `- Ultima consulta com: ${triagem.ultimaConsultaMeses} meses\n`;
     texto += `- Ultima consulta foi com: ${triagem.ultimoProfissional === 'medico' ? 'Medico(a)' : 'Enfermeiro(a)'}\n`;
+  } else if (triagem.tipo === 'preventivo') {
+    texto += `*PREVENTIVO (Papanicolau)*\n`;
+    texto += `- Maior de 25 anos: Sim\n`;
+    if (triagem.naoLembraPreventivos) {
+      texto += `- Ultimos preventivos: Nao lembra / Nunca fez\n`;
+    } else {
+      if (triagem.anoPreventivo1 || triagem.anoPreventivo2) {
+        texto += `- Penultimo preventivo: ${triagem.anoPreventivo1 || 'Nao informado'}\n`;
+        texto += `- Ultimo preventivo: ${triagem.anoPreventivo2 || 'Nao informado'}\n`;
+      } else {
+        texto += `- Ultimos preventivos: Nao informados\n`;
+      }
+    }
   }
   
   texto += `\nAguardo confirmacao!`;
