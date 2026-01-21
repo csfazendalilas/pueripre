@@ -81,8 +81,12 @@ async function carregarHorarios() {
     const slots = await resp.json();
     console.log('Slots recebidos do servidor:', slots);
     
+    // Filtra apenas os slots do médico (origem F)
+    const slotsMedico = (slots || []).filter(slot => slot.origem === 'F');
+    console.log('Slots do médico (origem F):', slotsMedico);
+    
     // Ordena os slots por data e hora
-    slotsGlobais = (slots || []).sort((a, b) => {
+    slotsGlobais = slotsMedico.sort((a, b) => {
       // Converte data DD/MM/YYYY para comparação
       const [diaA, mesA, anoA] = a.data.split('/').map(Number);
       const [diaB, mesB, anoB] = b.data.split('/').map(Number);
