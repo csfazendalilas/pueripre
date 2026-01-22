@@ -88,13 +88,36 @@ async function carregarHorarios() {
       console.log('Primeiro slot completo:', slots[0]);
     }
     
+    // Verifica se algum slot tem a propriedade origem
+    const temPropriedadeOrigem = (slots || []).some(slot => 
+      slot.origem || slot.Origem || slot.ORIGEM
+    );
+    
+    if (!temPropriedadeOrigem) {
+      console.warn('⚠️ ATENÇÃO: A propriedade "origem" não está sendo retornada pelo Google Apps Script.');
+      console.warn('⚠️ Aceitando todos os slots como enfermagem. Atualize o Google Apps Script para incluir a coluna "Origem".');
+    }
+    
     // Filtra apenas os slots da enfermagem (origem O) e status LIVRE
-    // Tenta diferentes variações da propriedade origem
+    // Se a propriedade origem não existir, assume que todos os slots são da enfermagem
+    // (já que estamos usando a planilha específica de enfermagem)
     const slotsEnfermagem = (slots || []).filter(slot => {
       const origem = slot.origem || slot.Origem || slot.ORIGEM;
       const status = slot.status || slot.Status || slot.STATUS;
+      
+      // Se não tem propriedade origem, aceita todos (assumindo que a planilha é só de enfermagem)
+      if (!temPropriedadeOrigem) {
+        const isLivre = !status || status === 'LIVRE' || status === 'Livre' || status === 'livre';
+        if (!isLivre) {
+          console.log('Slot filtrado (não está livre):', slot, 'status:', status);
+          return false;
+        }
+        return true;
+      }
+      
+      // Se tem propriedade origem, filtra por origem O
       const isEnfermagem = origem === 'O' || origem === 'o';
-      const isLivre = status === 'LIVRE' || status === 'Livre' || status === 'livre';
+      const isLivre = !status || status === 'LIVRE' || status === 'Livre' || status === 'livre';
       
       if (!isEnfermagem) {
         console.log('Slot filtrado (não é enfermagem):', slot, 'origem:', origem);
