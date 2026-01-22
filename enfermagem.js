@@ -80,10 +80,34 @@ async function carregarHorarios() {
 
     const slots = await resp.json();
     console.log('Slots recebidos do servidor:', slots);
+    console.log('Total de slots recebidos:', (slots || []).length);
     
-    // Filtra apenas os slots da enfermagem (origem O)
-    const slotsEnfermagem = (slots || []).filter(slot => slot.origem === 'O');
-    console.log('Slots da enfermagem (origem O):', slotsEnfermagem);
+    // Debug: mostra a estrutura do primeiro slot
+    if (slots && slots.length > 0) {
+      console.log('Estrutura do primeiro slot:', Object.keys(slots[0]));
+      console.log('Primeiro slot completo:', slots[0]);
+    }
+    
+    // Filtra apenas os slots da enfermagem (origem O) e status LIVRE
+    // Tenta diferentes variações da propriedade origem
+    const slotsEnfermagem = (slots || []).filter(slot => {
+      const origem = slot.origem || slot.Origem || slot.ORIGEM;
+      const status = slot.status || slot.Status || slot.STATUS;
+      const isEnfermagem = origem === 'O' || origem === 'o';
+      const isLivre = status === 'LIVRE' || status === 'Livre' || status === 'livre';
+      
+      if (!isEnfermagem) {
+        console.log('Slot filtrado (não é enfermagem):', slot, 'origem:', origem);
+        return false;
+      }
+      if (!isLivre) {
+        console.log('Slot filtrado (não está livre):', slot, 'status:', status);
+        return false;
+      }
+      return true;
+    });
+    console.log('Slots da enfermagem (origem O) após filtro:', slotsEnfermagem);
+    console.log('Total de slots da enfermagem:', slotsEnfermagem.length);
     
     // Ordena os slots por data e hora
     slotsGlobais = slotsEnfermagem.sort((a, b) => {
@@ -105,13 +129,19 @@ async function carregarHorarios() {
     });
 
     if (!slotsGlobais.length) {
+      const totalRecebido = (slots || []).length;
+      const totalEnfermagem = slotsEnfermagem.length;
       loading.innerHTML = `
         <div class="loading-card">
           <div style="font-size: 3rem; margin-bottom: 8px;">😔</div>
           <p class="loading-text">Nenhum horário disponível</p>
           <p class="loading-subtext">Tente novamente mais tarde ou ligue para a unidade</p>
+          <p class="loading-subtext" style="font-size: 0.75rem; margin-top: 8px; color: #64748b;">
+            Debug: ${totalRecebido} slots recebidos, ${totalEnfermagem} da enfermagem (origem O)
+          </p>
         </div>
       `;
+      console.warn('⚠️ Nenhum slot da enfermagem encontrado. Verifique o console para mais detalhes.');
       return;
     }
 
