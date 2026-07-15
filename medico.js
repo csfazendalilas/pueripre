@@ -214,7 +214,12 @@ function limparErroCampo(campoId) {
 }
 
 function limparTodosErros() {
-  ['slotSelect', 'nome', 'dataNascimento', 'observacoes'].forEach(limparErroCampo);
+  ['slotSelect', 'nome', 'dataNascimento', 'telefone', 'observacoes'].forEach(limparErroCampo);
+}
+
+function validarTelefone(telefone) {
+  const apenasNumeros = telefone.replace(/\D/g, '');
+  return apenasNumeros.length >= 10 && apenasNumeros.length <= 11;
 }
 
 // ============================================
@@ -226,6 +231,7 @@ function validarFormulario() {
   const select = document.getElementById('slotSelect');
   const nome = document.getElementById('nome').value.trim();
   const dataNascimento = document.getElementById('dataNascimento').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
   const observacoes = document.getElementById('observacoes').value.trim();
 
   let valido = true;
@@ -254,6 +260,16 @@ function validarFormulario() {
       valido = false;
       if (!primeiroCampoComErro) primeiroCampoComErro = document.getElementById('dataNascimento');
     }
+  }
+
+  if (!telefone) {
+    mostrarErroCampo('telefone', 'Informe seu telefone');
+    valido = false;
+    if (!primeiroCampoComErro) primeiroCampoComErro = document.getElementById('telefone');
+  } else if (!validarTelefone(telefone)) {
+    mostrarErroCampo('telefone', 'Telefone inválido');
+    valido = false;
+    if (!primeiroCampoComErro) primeiroCampoComErro = document.getElementById('telefone');
   }
 
   if (!observacoes || observacoes.length < 5) {
@@ -397,6 +413,7 @@ async function enviarAgendamento(event) {
 
   const nome = document.getElementById('nome').value.trim();
   const dataNascimento = document.getElementById('dataNascimento').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
   const observacoes = document.getElementById('observacoes').value.trim();
 
   const msgDiv = document.getElementById('mensagem');
@@ -433,6 +450,7 @@ async function enviarAgendamento(event) {
     origem: ((slot.origem || 'F') + '').toUpperCase(),
     canal: 'app',
     nome: nome,
+    telefone: telefone,
     dataNascimento: dataNascimento,
     observacoes: observacoes,
     // Dados da triagem
@@ -499,6 +517,20 @@ async function enviarAgendamento(event) {
 // ============================================
 // MÁSCARAS DE INPUT
 // ============================================
+function aplicarMascaraTelefone(input) {
+  let value = input.value.replace(/\D/g, '');
+
+  if (value.length <= 2) {
+    input.value = value ? '(' + value : '';
+  } else if (value.length <= 7) {
+    input.value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+  } else if (value.length <= 10) {
+    input.value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 6) + '-' + value.substring(6);
+  } else {
+    input.value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 7) + '-' + value.substring(7, 11);
+  }
+}
+
 function aplicarMascaraData(input) {
   let value = input.value.replace(/\D/g, '');
 
@@ -516,7 +548,7 @@ function aplicarMascaraData(input) {
 // VALIDAÇÃO EM TEMPO REAL
 // ============================================
 function configurarValidacaoEmTempoReal() {
-  const campos = ['slotSelect', 'nome', 'dataNascimento', 'observacoes'];
+  const campos = ['slotSelect', 'nome', 'dataNascimento', 'telefone', 'observacoes'];
 
   campos.forEach(campoId => {
     const campo = document.getElementById(campoId);
@@ -533,6 +565,8 @@ function configurarValidacaoEmTempoReal() {
         if (!validacao.valido) {
           mostrarErroCampo(campoId, validacao.mensagem);
         }
+      } else if (campoId === 'telefone' && !validarTelefone(valor)) {
+        mostrarErroCampo(campoId, 'Telefone inválido');
       }
     });
 
@@ -556,6 +590,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const dataNascInput = document.getElementById('dataNascimento');
   if (dataNascInput) {
     dataNascInput.addEventListener('input', (e) => aplicarMascaraData(e.target));
+  }
+
+  // Máscara de telefone
+  const telefoneInput = document.getElementById('telefone');
+  if (telefoneInput) {
+    telefoneInput.addEventListener('input', (e) => aplicarMascaraTelefone(e.target));
   }
 
   // Validação em tempo real
