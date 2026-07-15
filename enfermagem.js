@@ -337,8 +337,8 @@ function construirResumoAgendamento(slot, nome, dataNascimento, observacoes) {
     <div class="resumo-header">
       <div class="icon-ok" aria-hidden="true">✓</div>
       <div>
-        <div class="resumo-titulo">Agendamento realizado!</div>
-        <div class="resumo-subtitulo">Confira os dados e confirme no WhatsApp</div>
+        <div class="resumo-titulo">Falta 1 passo!</div>
+        <div class="resumo-subtitulo">Confirme no botão verde do WhatsApp acima — sem isso o horário não fica garantido</div>
       </div>
     </div>
     
@@ -366,8 +366,9 @@ function construirResumoAgendamento(slot, nome, dataNascimento, observacoes) {
     </ul>
 
     <p class="resumo-footer">
-      <strong>Importante:</strong> Para confirmar seu agendamento, clique no botão abaixo 
-      e envie a mensagem pelo WhatsApp. Sem essa confirmação, o horário poderá não ser reservado.
+      <strong>Importante:</strong> Para confirmar seu agendamento, toque no botão verde do
+      WhatsApp <strong>acima</strong> e envie a mensagem. Sem essa confirmação, o horário
+      poderá não ser reservado.
     </p>
   `;
 }
@@ -532,11 +533,8 @@ async function enviarAgendamento(event) {
       formFields.style.display = 'none';
     }
 
-    // Scroll suave para o topo do card
-    const card = document.querySelector('.card');
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Scroll direto para o aviso de confirmação do WhatsApp (agora em primeiro)
+    waDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) {
     console.error(err);
 
