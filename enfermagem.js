@@ -239,7 +239,7 @@ function limparErroCampo(campoId) {
 }
 
 function limparTodosErros() {
-  ['slotSelect', 'nome', 'dataNascimento', 'observacoes'].forEach(limparErroCampo);
+  ['slotSelect', 'nome', 'dataNascimento', 'telefone', 'observacoes'].forEach(limparErroCampo);
 }
 
 // ============================================
@@ -263,12 +263,18 @@ function validarDataNascimento(data) {
   return { valido: true };
 }
 
+function validarTelefone(telefone) {
+  const apenasNumeros = telefone.replace(/\D/g, '');
+  return apenasNumeros.length >= 10 && apenasNumeros.length <= 11;
+}
+
 function validarFormulario() {
   limparTodosErros();
 
   const select = document.getElementById('slotSelect');
   const nome = document.getElementById('nome').value.trim();
   const dataNascimento = document.getElementById('dataNascimento').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
   const observacoes = document.getElementById('observacoes').value.trim();
 
   let valido = true;
@@ -297,6 +303,16 @@ function validarFormulario() {
       valido = false;
       if (!primeiroCampoComErro) primeiroCampoComErro = document.getElementById('dataNascimento');
     }
+  }
+
+  if (!telefone) {
+    mostrarErroCampo('telefone', 'Informe seu telefone');
+    valido = false;
+    if (!primeiroCampoComErro) primeiroCampoComErro = document.getElementById('telefone');
+  } else if (!validarTelefone(telefone)) {
+    mostrarErroCampo('telefone', 'Telefone inválido');
+    valido = false;
+    if (!primeiroCampoComErro) primeiroCampoComErro = document.getElementById('telefone');
   }
 
   if (!observacoes || observacoes.length < 5) {
@@ -453,6 +469,7 @@ async function enviarAgendamento(event) {
 
   const nome = document.getElementById('nome').value.trim();
   const dataNascimento = document.getElementById('dataNascimento').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
   const observacoes = document.getElementById('observacoes').value.trim();
 
   const msgDiv = document.getElementById('mensagem');
@@ -490,6 +507,7 @@ async function enviarAgendamento(event) {
     origem: ((slot.origem || 'O') + '').toUpperCase(),
     canal: 'enf',
     nome: nome,
+    telefone: telefone,
     dataNascimento: dataNascimento,
     observacoes: observacoes,
     // Dados da triagem
@@ -554,6 +572,23 @@ async function enviarAgendamento(event) {
 }
 
 // ============================================
+// MÁSCARA DE TELEFONE
+// ============================================
+function aplicarMascaraTelefone(input) {
+  let value = input.value.replace(/\D/g, '');
+
+  if (value.length <= 2) {
+    input.value = value ? '(' + value : '';
+  } else if (value.length <= 7) {
+    input.value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+  } else if (value.length <= 10) {
+    input.value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 6) + '-' + value.substring(6);
+  } else {
+    input.value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 7) + '-' + value.substring(7, 11);
+  }
+}
+
+// ============================================
 // MÁSCARA DE DATA
 // ============================================
 function aplicarMascaraData(input) {
@@ -573,7 +608,7 @@ function aplicarMascaraData(input) {
 // VALIDAÇÃO EM TEMPO REAL
 // ============================================
 function configurarValidacaoEmTempoReal() {
-  const campos = ['slotSelect', 'nome', 'dataNascimento', 'observacoes'];
+  const campos = ['slotSelect', 'nome', 'dataNascimento', 'telefone', 'observacoes'];
 
   campos.forEach(campoId => {
     const campo = document.getElementById(campoId);
@@ -583,7 +618,7 @@ function configurarValidacaoEmTempoReal() {
 
     if (campoId === 'dataNascimento') {
       campo.addEventListener('input', (e) => aplicarMascaraData(e.target));
-      
+
       campo.addEventListener('blur', function () {
         const valor = campo.value.trim();
         if (!valor) return;
@@ -591,6 +626,19 @@ function configurarValidacaoEmTempoReal() {
         const validacao = validarDataNascimento(valor);
         if (!validacao.valido) {
           mostrarErroCampo(campoId, validacao.mensagem);
+        }
+      });
+    }
+
+    if (campoId === 'telefone') {
+      campo.addEventListener('input', (e) => aplicarMascaraTelefone(e.target));
+
+      campo.addEventListener('blur', function () {
+        const valor = campo.value.trim();
+        if (!valor) return;
+
+        if (!validarTelefone(valor)) {
+          mostrarErroCampo(campoId, 'Telefone inválido');
         }
       });
     }
