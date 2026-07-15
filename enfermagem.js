@@ -1,7 +1,10 @@
 // ============================================
 // CONFIGURAÇÕES
 // ============================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbxctImh1MzJ8bNIMSTYOMy4DxuLloCSzXDn1z5l1VO5Re55T8ScH7yLl-olWBOMNUVDSg/exec';
+// IMPORTANTE: agora aponta para o MESMO backend do site principal (backend
+// unificado). O backend antigo da enfermagem não tinha proteção contra
+// agendamentos simultâneos e deve ser desativado.
+const API_URL = 'https://script.google.com/macros/s/AKfycbzSnLgusejiDF9oCtL-xjY54TybLn91HyX3NTofToGRs9rqREqg136D2czCsSLhNrti/exec';
 const WHATSAPP_DESTINO = '5548920039171';
 
 // Estado global
@@ -477,8 +480,14 @@ async function enviarAgendamento(event) {
   const dadosTriagem = dadosTriagemStr ? JSON.parse(dadosTriagemStr) : {};
   console.log('📋 Dados da triagem recuperados:', dadosTriagem);
 
+  // Identifica a vaga pela chave data+hora+origem (o rowIndex muda quando
+  // outras pessoas agendam; a chave não). canal 'enf' mantém o marcador da
+  // enfermagem na coluna M da agenda do posto.
   const dados = {
-    rowIndex: slot.rowIndex,
+    data: slot.data,
+    hora: slot.hora,
+    origem: ((slot.origem || 'O') + '').toUpperCase(),
+    canal: 'enf',
     nome: nome,
     dataNascimento: dataNascimento,
     observacoes: observacoes,
@@ -503,6 +512,12 @@ async function enviarAgendamento(event) {
 
     const res = await resp.json();
     console.log('Resposta da API:', res);
+
+    // O servidor só confirma quando o paciente foi registrado na agenda do
+    // posto. Qualquer outra resposta é tratada como falha.
+    if (!res || res.sucesso !== true) {
+      throw new Error((res && res.mensagem) || 'Não foi possível concluir o agendamento. Tente novamente.');
+    }
 
     // Atualizar progress para step 3 (confirmação)
     atualizarProgressStep(3);
