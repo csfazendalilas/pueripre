@@ -424,8 +424,13 @@ async function enviarAgendamento(event) {
   const dadosTriagem = dadosTriagemStr ? JSON.parse(dadosTriagemStr) : {};
   console.log('📋 Dados da triagem recuperados:', dadosTriagem);
 
+  // Identifica a vaga pela chave data+hora+origem (o rowIndex muda quando
+  // outras pessoas agendam; a chave não)
   const dados = {
-    rowIndex: slot.rowIndex,
+    data: slot.data,
+    hora: slot.hora,
+    origem: ((slot.origem || 'F') + '').toUpperCase(),
+    canal: 'app',
     nome: nome,
     dataNascimento: dataNascimento,
     observacoes: observacoes,
@@ -450,6 +455,12 @@ async function enviarAgendamento(event) {
 
     const res = await resp.json();
     console.log('Resposta da API:', res);
+
+    // O servidor só confirma quando o paciente foi registrado na agenda do
+    // posto. Qualquer outra resposta é tratada como falha.
+    if (!res || res.sucesso !== true) {
+      throw new Error((res && res.mensagem) || 'Não foi possível concluir o agendamento. Tente novamente.');
+    }
 
     msgDiv.className = 'msg sucesso';
     msgDiv.innerHTML = construirResumoAgendamento(slot, nome, dataNascimento, observacoes);
