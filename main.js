@@ -32,6 +32,51 @@ function destinoFinal(servico, destinoAutomatico) {
 }
 
 // ============================================
+// ENCAMINHAMENTO CONFIGURÁVEL PELO PAINEL
+// (admin.html do site principal, seção "Encaminhamento da triagem")
+// 'auto' = as regras da triagem decidem; 'enfermagem'/'medico' = destino fixo.
+// ============================================
+
+const API_CONFIG_URL = 'https://script.google.com/macros/s/AKfycbzSnLgusejiDF9oCtL-xjY54TybLn91HyX3NTofToGRs9rqREqg136D2czCsSLhNrti/exec';
+const CHAVE_CACHE_ROTEAMENTO = 'roteamentoTriagem';
+
+let roteamentoTriagem = { prenatal: 'auto', puericultura: 'auto', preventivo: 'auto' };
+
+(function carregarRoteamento() {
+  // 1) aplica na hora o que estiver guardado no navegador
+  try {
+    const cacheado = localStorage.getItem(CHAVE_CACHE_ROTEAMENTO);
+    if (cacheado) roteamentoTriagem = Object.assign(roteamentoTriagem, JSON.parse(cacheado));
+  } catch (e) { /* cache inválido é ignorado */ }
+
+  // 2) busca a regra fresca no servidor (resolve muito antes de a pessoa
+  //    terminar o questionário)
+  fetch(API_CONFIG_URL + '?action=getConfig', { cache: 'no-cache' })
+    .then(resp => (resp.ok ? resp.json() : null))
+    .then(cfg => {
+      if (cfg && cfg.roteamento) {
+        roteamentoTriagem = Object.assign(roteamentoTriagem, cfg.roteamento);
+        localStorage.setItem(CHAVE_CACHE_ROTEAMENTO, JSON.stringify(cfg.roteamento));
+      } else if (cfg === null) {
+        localStorage.removeItem(CHAVE_CACHE_ROTEAMENTO);
+      }
+      console.log('🧭 Encaminhamento em uso:', roteamentoTriagem);
+    })
+    .catch(() => { /* sem rede: fica o cache/padrão */ });
+})();
+
+/**
+ * Decide a página de destino de um serviço:
+ * respeita o que foi escolhido no painel; em 'auto', usa a regra da triagem.
+ */
+function destinoFinal(servico, destinoAutomatico) {
+  const regra = roteamentoTriagem[servico] || 'auto';
+  if (regra === 'enfermagem') return 'enfermagem.html';
+  if (regra === 'medico') return 'medico.html';
+  return destinoAutomatico;
+}
+
+// ============================================
 // NAVEGAÇÃO ENTRE CARDS
 // ============================================
 
