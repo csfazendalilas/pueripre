@@ -1,69 +1,46 @@
 // ============================================
-// ENCAMINHAMENTO CONFIGURÁVEL (painel do site principal)
-// ============================================
-// O painel /admin.html do site principal pode fixar o destino de cada
-// serviço ('enfermagem' ou 'medico'); 'auto' mantém a regra da triagem.
-const API_URL_CONFIG = 'https://script.google.com/macros/s/AKfycbzSnLgusejiDF9oCtL-xjY54TybLn91HyX3NTofToGRs9rqREqg136D2czCsSLhNrti/exec';
-let roteamentoConfig = {};
-
-(async function carregarRoteamento() {
-  try {
-    const resp = await fetch(API_URL_CONFIG + '?action=getConfig', { cache: 'no-cache' });
-    if (!resp.ok) return;
-    const cfg = await resp.json();
-    if (cfg && cfg.roteamento) {
-      roteamentoConfig = cfg.roteamento;
-      console.log('🧭 Encaminhamento configurado pelo painel:', roteamentoConfig);
-    }
-  } catch (err) {
-    console.warn('Encaminhamento: usando regras automáticas.', err);
-  }
-})();
-
-/**
- * Destino final de um serviço: respeita o toggle do painel; no automático,
- * usa o destino que a triagem calculou.
- */
-function destinoFinal(servico, destinoAutomatico) {
-  const regra = roteamentoConfig[servico] || 'auto';
-  if (regra === 'enfermagem') return 'enfermagem.html';
-  if (regra === 'medico') return 'medico.html';
-  return destinoAutomatico;
-}
-
-// ============================================
 // ENCAMINHAMENTO CONFIGURÁVEL PELO PAINEL
 // (admin.html do site principal, seção "Encaminhamento da triagem")
 // 'auto' = as regras da triagem decidem; 'enfermagem'/'medico' = destino fixo.
+// Nada fica guardado no navegador: as regras vêm da cópia rápida do site
+// (config.json, ~100ms) e do servidor (fonte da verdade, ~1s, prevalece).
 // ============================================
 
-const API_CONFIG_URL = 'https://script.google.com/macros/s/AKfycbzSnLgusejiDF9oCtL-xjY54TybLn91HyX3NTofToGRs9rqREqg136D2czCsSLhNrti/exec';
-const CHAVE_CACHE_ROTEAMENTO = 'roteamentoTriagem';
+const API_URL_CONFIG = 'https://script.google.com/macros/s/AKfycbzSnLgusejiDF9oCtL-xjY54TybLn91HyX3NTofToGRs9rqREqg136D2czCsSLhNrti/exec';
 
 let roteamentoTriagem = { prenatal: 'auto', puericultura: 'auto', preventivo: 'auto' };
+let roteamentoServidorAplicado = false;
 
-(function carregarRoteamento() {
-  // 1) aplica na hora o que estiver guardado no navegador
-  try {
-    const cacheado = localStorage.getItem(CHAVE_CACHE_ROTEAMENTO);
-    if (cacheado) roteamentoTriagem = Object.assign(roteamentoTriagem, JSON.parse(cacheado));
-  } catch (e) { /* cache inválido é ignorado */ }
+// Limpa a chave do cache antigo (abordagem descartada)
+try { localStorage.removeItem('roteamentoTriagem'); } catch (e) {}
 
-  // 2) busca a regra fresca no servidor (resolve muito antes de a pessoa
-  //    terminar o questionário)
-  fetch(API_CONFIG_URL + '?action=getConfig', { cache: 'no-cache' })
-    .then(resp => (resp.ok ? resp.json() : null))
-    .then(cfg => {
-      if (cfg && cfg.roteamento) {
-        roteamentoTriagem = Object.assign(roteamentoTriagem, cfg.roteamento);
-        localStorage.setItem(CHAVE_CACHE_ROTEAMENTO, JSON.stringify(cfg.roteamento));
-      } else if (cfg === null) {
-        localStorage.removeItem(CHAVE_CACHE_ROTEAMENTO);
-      }
-      console.log('🧭 Encaminhamento em uso:', roteamentoTriagem);
-    })
-    .catch(() => { /* sem rede: fica o cache/padrão */ });
-})();
+// 1) Cópia rápida servida pelo próprio site (mesma origem do GitHub Pages)
+fetch('/agendamento/config.json?v=' + Date.now())
+  .then(resp => (resp.ok ? resp.json() : null))
+  .then(cfg => {
+    if (roteamentoServidorAplicado) return;
+    if (cfg && cfg.roteamento) {
+      roteamentoTriagem = Object.assign(roteamentoTriagem, cfg.roteamento);
+      console.log('⚡ Encaminhamento da cópia rápida:', roteamentoTriagem);
+    }
+  })
+  .catch(() => { /* sem cópia rápida: fica o padrão até o servidor responder */ });
+
+// 2) Servidor (fonte da verdade): resolve muito antes de a pessoa terminar
+//    o questionário e SEMPRE prevalece sobre a cópia rápida
+fetch(API_URL_CONFIG + '?action=getConfig', { cache: 'no-cache' })
+  .then(resp => (resp.ok ? resp.json() : null))
+  .then(cfg => {
+    roteamentoServidorAplicado = true;
+    if (cfg && cfg.roteamento) {
+      roteamentoTriagem = Object.assign(
+        { prenatal: 'auto', puericultura: 'auto', preventivo: 'auto' },
+        cfg.roteamento
+      );
+    }
+    console.log('🧭 Encaminhamento confirmado pelo servidor:', roteamentoTriagem);
+  })
+  .catch(() => { /* sem rede: fica o que já temos */ });
 
 /**
  * Decide a página de destino de um serviço:
