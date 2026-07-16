@@ -1,4 +1,37 @@
 // ============================================
+// ENCAMINHAMENTO CONFIGURÁVEL (painel do site principal)
+// ============================================
+// O painel /admin.html do site principal pode fixar o destino de cada
+// serviço ('enfermagem' ou 'medico'); 'auto' mantém a regra da triagem.
+const API_URL_CONFIG = 'https://script.google.com/macros/s/AKfycbzSnLgusejiDF9oCtL-xjY54TybLn91HyX3NTofToGRs9rqREqg136D2czCsSLhNrti/exec';
+let roteamentoConfig = {};
+
+(async function carregarRoteamento() {
+  try {
+    const resp = await fetch(API_URL_CONFIG + '?action=getConfig', { cache: 'no-cache' });
+    if (!resp.ok) return;
+    const cfg = await resp.json();
+    if (cfg && cfg.roteamento) {
+      roteamentoConfig = cfg.roteamento;
+      console.log('🧭 Encaminhamento configurado pelo painel:', roteamentoConfig);
+    }
+  } catch (err) {
+    console.warn('Encaminhamento: usando regras automáticas.', err);
+  }
+})();
+
+/**
+ * Destino final de um serviço: respeita o toggle do painel; no automático,
+ * usa o destino que a triagem calculou.
+ */
+function destinoFinal(servico, destinoAutomatico) {
+  const regra = roteamentoConfig[servico] || 'auto';
+  if (regra === 'enfermagem') return 'enfermagem.html';
+  if (regra === 'medico') return 'medico.html';
+  return destinoAutomatico;
+}
+
+// ============================================
 // NAVEGAÇÃO ENTRE CARDS
 // ============================================
 
@@ -353,17 +386,17 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (ultimaConsulta.value === 'primeira') {
         console.log('➡️ Primeira consulta de pré-natal -> ENFERMAGEM');
-        window.location.href = 'enfermagem.html';
+        window.location.href = destinoFinal('prenatal', 'enfermagem.html');
         return;
       }
-      
+
       // Alternância: último foi X, próximo é Y
       if (ultimoProfissional.value === 'enfermeiro') {
         console.log('➡️ Último foi enfermeiro -> próximo é MÉDICO');
-        window.location.href = 'medico.html';
+        window.location.href = destinoFinal('prenatal', 'medico.html');
       } else if (ultimoProfissional.value === 'medico') {
         console.log('➡️ Último foi médico -> próximo é ENFERMAGEM');
-        window.location.href = 'enfermagem.html';
+        window.location.href = destinoFinal('prenatal', 'enfermagem.html');
       } else {
         console.log('⚠️ Valor inesperado:', ultimoProfissional.value);
         alert('Erro: opção de profissional não reconhecida');
@@ -419,10 +452,10 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (ultimoProfissional.value === 'enfermeiro') {
         console.log('➡️ Último foi enfermeiro -> próximo é MÉDICO');
-        window.location.href = 'medico.html';
+        window.location.href = destinoFinal('puericultura', 'medico.html');
       } else if (ultimoProfissional.value === 'medico') {
         console.log('➡️ Último foi médico -> próximo é ENFERMAGEM');
-        window.location.href = 'enfermagem.html';
+        window.location.href = destinoFinal('puericultura', 'enfermagem.html');
       } else {
         console.log('⚠️ Valor inesperado:', ultimoProfissional.value);
         alert('Erro: opção de profissional não reconhecida');
@@ -559,9 +592,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Salva no localStorage
       salvarDadosTriagem(dadosTriagem);
       
-      // Redireciona para agendamento de enfermagem
+      // Redireciona para agendamento (enfermagem por padrão)
       console.log('➡️ Preventivo -> ENFERMAGEM');
-      window.location.href = 'enfermagem.html';
+      window.location.href = destinoFinal('preventivo', 'enfermagem.html');
     });
   }
 });
