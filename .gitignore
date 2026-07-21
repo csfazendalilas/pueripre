@@ -1,19 +1,16 @@
-# Backend do Google Apps Script (não vai pro GitHub Pages)
-# Esses arquivos ficam no Google Apps Script, não no frontend
-codeenfermagem.js
-codemedico.js
-CodeEnfermagem.gs
-CodeMedico.gs
+# Backend do Google Apps Script — NÃO deve ficar no repositório público.
+# O código real vive só no Apps Script (script.google.com). Estes arquivos
+# expõem IDs de planilhas e a lógica interna sem nenhum benefício para o site.
+.clasp.json
+.clasprc.json
+backend/
+meu-backend-gas/
+Code.js
+code.js
+TriggerPosto.js
+TriggerEnfermagem.js
+duplicidade.js
+appsscript.json
 
-# Arquivos de sistema
+# Sistema
 .DS_Store
-Thumbs.db
-
-# Editor/IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-*.log
