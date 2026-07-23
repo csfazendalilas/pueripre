@@ -275,7 +275,7 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="grupo-ultima-consulta-meses">
               <label class="form-label" for="ultimaConsultaMeses">
                 <span class="label-icon">📅</span>
                 Última consulta foi com quantos meses?
@@ -287,8 +287,32 @@
             </div>
           </div>
 
-          <!-- Último profissional -->
+          <!-- Primeira consulta? -->
           <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">🌟</span>
+              Esta é a primeira consulta da criança?
+            </label>
+            <div class="option-cards option-cards-row">
+              <label class="option-card">
+                <input type="radio" name="primeiraConsultaPuericultura" value="sim">
+                <span class="option-content">
+                  <span class="option-icon">✅</span>
+                  <span class="option-title">Sim</span>
+                </span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="primeiraConsultaPuericultura" value="nao">
+                <span class="option-content">
+                  <span class="option-icon">❌</span>
+                  <span class="option-title">Não</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Último profissional -->
+          <div class="form-group" id="grupo-ultimo-profissional">
             <label class="form-label">
               <span class="label-icon">👨‍⚕️</span>
               Com quem foi a última consulta?
@@ -496,7 +520,7 @@
     </footer>
   </div>
 
-  <script src="main.js?v=20260722"></script>
+  <script src="main.js?v=20260723"></script>>
 </body>
 
 </html>

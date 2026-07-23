@@ -430,33 +430,76 @@ document.addEventListener('DOMContentLoaded', function() {
   // SUBMIT - PUERICULTURA
   // ============================================
   
+  // "Esta é a primeira consulta?" — se SIM, as perguntas de última consulta
+  // não se aplicam: esconde os dois grupos (e tira o required para o navegador
+  // não travar o envio em campo escondido). Se NÃO, mostra e segue normal.
+  function atualizarPrimeiraConsulta() {
+    const marcado = document.querySelector('input[name="primeiraConsultaPuericultura"]:checked');
+    const ehPrimeira = !!(marcado && marcado.value === 'sim');
+    const grupoMeses = document.getElementById('grupo-ultima-consulta-meses');
+    const grupoProf = document.getElementById('grupo-ultimo-profissional');
+    if (grupoMeses) grupoMeses.classList.toggle('hidden', ehPrimeira);
+    if (grupoProf) grupoProf.classList.toggle('hidden', ehPrimeira);
+    const campoMeses = document.getElementById('ultimaConsultaMeses');
+    if (campoMeses) campoMeses.required = !ehPrimeira;
+    document.querySelectorAll('input[name="ultimoProfissionalPuericultura"]').forEach(function(r) {
+      r.required = !ehPrimeira;
+    });
+  }
+  document.querySelectorAll('input[name="primeiraConsultaPuericultura"]').forEach(function(r) {
+    r.addEventListener('change', atualizarPrimeiraConsulta);
+  });
+  if (formPuericultura) {
+    formPuericultura.addEventListener('reset', function() {
+      setTimeout(atualizarPrimeiraConsulta, 0);
+    });
+  }
+
   if (formPuericultura) {
     formPuericultura.addEventListener('submit', function(e) {
       e.preventDefault();
       console.log('📝 Formulário puericultura submetido');
-      
+
       const mesesCrianca = document.getElementById('mesesCrianca');
       const ultimaConsultaMeses = document.getElementById('ultimaConsultaMeses');
       const ultimoProfissional = document.querySelector('input[name="ultimoProfissionalPuericultura"]:checked');
-      
+      const primeiraConsulta = document.querySelector('input[name="primeiraConsultaPuericultura"]:checked');
+
       // Validação básica
       if (!mesesCrianca || !mesesCrianca.value) {
         alert('Por favor, informe quantos meses a criança tem.');
         if (mesesCrianca) mesesCrianca.focus();
         return;
       }
-      
+
+      if (!primeiraConsulta) {
+        alert('Por favor, informe se esta é a primeira consulta da criança.');
+        return;
+      }
+
+      // PRIMEIRA CONSULTA -> vai direto para a ENFERMAGEM
+      if (primeiraConsulta.value === 'sim') {
+        salvarDadosTriagem({
+          tipo: 'puericultura',
+          mesesCrianca: mesesCrianca.value,
+          primeiraConsulta: true
+        });
+        console.log('➡️ Primeira consulta -> ENFERMAGEM');
+        window.location.href = destinoFinal('puericultura', 'enfermagem.html');
+        return;
+      }
+
       if (!ultimaConsultaMeses || !ultimaConsultaMeses.value) {
         alert('Por favor, informe com quantos meses foi a última consulta.');
         if (ultimaConsultaMeses) ultimaConsultaMeses.focus();
         return;
       }
-      
+
       if (!ultimoProfissional) {
         alert('Por favor, informe com quem foi a última consulta.');
         return;
       }
-      
+
       // Monta os dados da triagem para salvar
       const dadosTriagem = {
         tipo: 'puericultura',
