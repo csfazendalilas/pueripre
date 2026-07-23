@@ -262,6 +262,30 @@
         </div>
 
         <form id="form-puericultura" class="form-fields">
+          <!-- Primeira consulta? (primeira pergunta) -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">🌟</span>
+              Esta é a primeira consulta da criança?
+            </label>
+            <div class="option-cards option-cards-row">
+              <label class="option-card">
+                <input type="radio" name="primeiraConsultaPuericultura" value="sim">
+                <span class="option-content">
+                  <span class="option-icon">✅</span>
+                  <span class="option-title">Sim</span>
+                </span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="primeiraConsultaPuericultura" value="nao">
+                <span class="option-content">
+                  <span class="option-icon">❌</span>
+                  <span class="option-title">Não</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
           <!-- Idade da criança -->
           <div class="form-row">
             <div class="form-group">
@@ -284,30 +308,6 @@
                 <input type="number" id="ultimaConsultaMeses" class="input-field" min="0" max="24" placeholder="Ex: 4" required>
                 <span class="input-suffix">meses</span>
               </div>
-            </div>
-          </div>
-
-          <!-- Primeira consulta? -->
-          <div class="form-group">
-            <label class="form-label">
-              <span class="label-icon">🌟</span>
-              Esta é a primeira consulta da criança?
-            </label>
-            <div class="option-cards option-cards-row">
-              <label class="option-card">
-                <input type="radio" name="primeiraConsultaPuericultura" value="sim">
-                <span class="option-content">
-                  <span class="option-icon">✅</span>
-                  <span class="option-title">Sim</span>
-                </span>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="primeiraConsultaPuericultura" value="nao">
-                <span class="option-content">
-                  <span class="option-icon">❌</span>
-                  <span class="option-title">Não</span>
-                </span>
-              </label>
             </div>
           </div>
 
